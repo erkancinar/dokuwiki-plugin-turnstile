@@ -6,6 +6,12 @@ on:
     - cron: '22 21 12 * *'
 
 
+# the shared autofix job opens pull requests with style fixes; new repositories
+# default to a read-only token, which makes the whole run fail at startup
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   all:
     uses: dokuwiki/github-action/.github/workflows/all.yml@main
