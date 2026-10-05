@@ -5,13 +5,29 @@ on:
   schedule:
     - cron: '22 21 12 * *'
 
-
-# the shared autofix job opens pull requests with style fixes; new repositories
-# default to a read-only token, which makes the whole run fail at startup
+# The jobs of dokuwiki/github-action all.yml without its rector auto-fix job:
+# rector targets the PHP version of current DokuWiki and rewrites code into syntax
+# (e.g. first-class callables) that breaks older releases this plugin still supports
+# (Kaos on PHP 7.4). Without that job the token only needs read access.
 permissions:
-  contents: write
-  pull-requests: write
+  contents: read
+  pull-requests: read
 
 jobs:
-  all:
-    uses: dokuwiki/github-action/.github/workflows/all.yml@main
+  create-matrix:
+    uses: dokuwiki/github-action/.github/workflows/matrix.yml@main
+
+  test-master:
+    needs: create-matrix
+    uses: dokuwiki/github-action/.github/workflows/test.yml@main
+    with:
+      matrix-json: ${{ needs.create-matrix.outputs.master_matrix }}
+
+  test-stable:
+    needs: create-matrix
+    uses: dokuwiki/github-action/.github/workflows/test.yml@main
+    with:
+      matrix-json: ${{ needs.create-matrix.outputs.stable_matrix }}
+
+  code-style:
+    uses: dokuwiki/github-action/.github/workflows/cs.yml@main
