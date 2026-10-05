@@ -1,0 +1,7 @@
+base   turnstile
+author Erkan Çınar
+email  erkancinar@gmail.com
+date   2026-10-05
+name   Cloudflare Turnstile Plugin
+desc   Protect the login, password reset and registration forms with Cloudflare Turnstile
+url    https://www.dokuwiki.org/plugin:turnstile

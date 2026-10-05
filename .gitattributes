@@ -1,0 +1,6 @@
+* text=auto eol=lf
+
+# not needed in the installed plugin
+/_test export-ignore
+/.github export-ignore
+/.gitattributes export-ignore

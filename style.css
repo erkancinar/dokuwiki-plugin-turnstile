@@ -1,0 +1,9 @@
+/* keep the widget apart from the fields above and the button below */
+.plugin_turnstile {
+    margin: 0.5em 0 1em;
+}
+
+.plugin_turnstile_noscript {
+    margin: 0.5em 0 1em;
+    font-weight: bold;
+}
