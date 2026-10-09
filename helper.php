@@ -51,7 +51,7 @@ class helper_plugin_turnstile extends Plugin
     /**
      * The plugin is enabled and the given form is selected in the configuration
      *
-     * @param string $form one of login, resendpwd, register, edit
+     * @param string $form one of login, resendpwd, register, edit, discussion
      * @return bool
      */
     public function isFormProtected($form)

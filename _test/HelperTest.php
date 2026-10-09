@@ -78,6 +78,22 @@ namespace dokuwiki\plugin\turnstile\test {
             $this->assertFalse($helper->isFormProtected('resendpwd'));
         }
 
+        public function testDiscussionComments(): void
+        {
+            global $conf, $INPUT;
+            $conf['plugin']['turnstile']['forms'] = 'login,discussion';
+            $helper = $this->stub(false);
+            $this->assertTrue($helper->isRequestProtected('discussion'), 'anonymous comment');
+            $INPUT->server->set('REMOTE_USER', 'testuser');
+            $this->assertFalse($helper->isRequestProtected('discussion'), 'logged-in users only with forusers');
+            $conf['plugin']['turnstile']['forusers'] = 1;
+            $this->assertTrue($helper->isRequestProtected('discussion'));
+
+            $meta = [];
+            include __DIR__ . '/../conf/metadata.php';
+            $this->assertContains('discussion', $meta['forms']['_choices'], 'selectable in the Configuration Manager');
+        }
+
         public function testEncodedSecretIsDecoded(): void
         {
             global $conf;

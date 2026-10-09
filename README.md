@@ -4,7 +4,7 @@
 [![DokuWiki plugin page](https://img.shields.io/badge/dokuwiki.org-plugin%3Aturnstile-blue)](https://www.dokuwiki.org/plugin:turnstile)
 [![License: GPL v2](https://img.shields.io/badge/license-GPL%20v2-green)](LICENSE)
 
-Protects the login, password reset and registration forms and, if you want, page editing with
+Protects the login, password reset and registration forms and, if you want, page editing and discussion comments with
 [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/), a free, privacy friendly
 CAPTCHA alternative. The token is verified on the server before DokuWiki looks at the password,
 so bots trying passwords never reach your user backend.
@@ -40,6 +40,10 @@ Compatible with DokuWiki Kaos (2024-02-06), Librarian (2025-05-14) and Mort (202
 - Saving a page in the editor, if *Page editing* is selected (off by default). A failed check turns
   the save into a preview, so the text is kept and can be saved again with a new check. Previews and
   drafts are not checked. Logged-in users are not asked unless `forusers` is switched on.
+- Comments of the [discussion plugin](https://www.dokuwiki.org/plugin:discussion), if *Discussion comments*
+  is selected. The discussion plugin itself calls the check, so it needs a version with Turnstile support
+  ([dokufreaks/plugin-discussion#386](https://github.com/dokufreaks/plugin-discussion/pull/386)). The
+  `forusers` setting applies here too.
 
 An invalid, expired or reused token is always rejected. What happens when Cloudflare cannot be
 reached is configurable (`failmode`, default: reject).

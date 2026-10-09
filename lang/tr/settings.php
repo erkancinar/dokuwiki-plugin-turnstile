@@ -13,6 +13,7 @@ $lang['forms_o_login'] = 'Giriş';
 $lang['forms_o_resendpwd'] = 'Parola sıfırlama';
 $lang['forms_o_register'] = 'Kayıt';
 $lang['forms_o_edit'] = 'Sayfa düzenleme (sayfa kaydedilirken denetlenir)';
+$lang['forms_o_discussion'] = 'Discussion eklentisinin yorumları (Turnstile desteği olan bir discussion sürümü gerekir)';
 $lang['forusers'] = 'Giriş yapmış kullanıcılara da sor (sayfa düzenleme; giriş, parola sıfırlama ve kayıt zaten yalnız anonim kullanıcılara gösterilir)';
 $lang['theme'] = 'Kutucuk teması';
 $lang['theme_o_auto'] = 'Otomatik';
