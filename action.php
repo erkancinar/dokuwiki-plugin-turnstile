@@ -6,7 +6,7 @@ use dokuwiki\Extension\EventHandler;
 use dokuwiki\Form\Form;
 
 /**
- * Cloudflare Turnstile for the login, password reset and registration forms
+ * Cloudflare Turnstile for the login, password reset and registration forms and for page editing
  *
  * @license GPL 2 (https://www.gnu.org/licenses/gpl-2.0.html)
  * @author  Erkan Çınar <erkancinar@gmail.com>
@@ -18,7 +18,13 @@ class action_plugin_turnstile extends ActionPlugin
         'FORM_LOGIN_OUTPUT' => 'login',
         'FORM_RESENDPWD_OUTPUT' => 'resendpwd',
         'FORM_REGISTER_OUTPUT' => 'register',
+        'FORM_EDIT_OUTPUT' => 'edit',
+        // shown instead of the editor when somebody else saved the page meanwhile, it saves the text as well
+        'FORM_CONFLICT_OUTPUT' => 'edit',
     ];
+
+    /** forms that logged-in users see too; whether they are asked depends on the "forusers" setting */
+    protected const USER_FORMS = ['edit'];
 
     /** @inheritdoc */
     public function register(EventHandler $controller)
@@ -40,7 +46,7 @@ class action_plugin_turnstile extends ActionPlugin
     public function handleFormOutput(Event $event)
     {
         $helper = $this->getHelper();
-        if (!$helper->isFormProtected(self::FORM_EVENTS[$event->name])) return;
+        if (!$this->isProtected(self::FORM_EVENTS[$event->name])) return;
 
         $form = $event->data;
         if (!$form instanceof Form) return;
@@ -81,9 +87,15 @@ class action_plugin_turnstile extends ActionPlugin
     }
 
     /**
-     * Check the token when the password reset or registration form is submitted
+     * Check the token when an edited page is saved or the password reset or registration form is submitted
      *
-     * On failure the "save" flag is removed, so DokuWiki shows the form again instead of processing it.
+     * A failed page save becomes a preview: nothing is written and the editor shows the submitted text again, the
+     * way DokuWiki handles a missing security token. Preview and draft requests are not checked, so they do not use
+     * up the single-use token. Pages written through the remote API or by reverting to an old revision have no
+     * form to show the widget in and are not covered.
+     *
+     * A failed password reset or registration loses its "save" flag, so DokuWiki shows the form again instead of
+     * processing it.
      *
      * @param Event $event
      * @return void
@@ -93,6 +105,13 @@ class action_plugin_turnstile extends ActionPlugin
         global $INPUT;
 
         $act = act_clean($event->data);
+        if ($act === 'save') {
+            if ($this->isProtected('edit') && !$this->getHelper()->check('edit')) {
+                $event->data = 'preview';
+            }
+            return;
+        }
+
         if (!in_array($act, ['resendpwd', 'register'], true)) return;
         if (!$INPUT->post->bool('save')) return; // the form is only being displayed
 
@@ -101,6 +120,22 @@ class action_plugin_turnstile extends ActionPlugin
         if ($helper->check($act)) return;
 
         $INPUT->post->set('save', false);
+    }
+
+    /**
+     * Should the current request be checked for the given form?
+     *
+     * Forms only anonymous users see keep the plain configuration check, so their behaviour does not depend on
+     * the "forusers" setting.
+     *
+     * @param string $form
+     * @return bool
+     */
+    protected function isProtected($form)
+    {
+        $helper = $this->getHelper();
+        if (in_array($form, self::USER_FORMS, true)) return $helper->isRequestProtected($form);
+        return $helper->isFormProtected($form);
     }
 
     /**

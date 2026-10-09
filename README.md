@@ -4,7 +4,7 @@
 [![DokuWiki plugin page](https://img.shields.io/badge/dokuwiki.org-plugin%3Aturnstile-blue)](https://www.dokuwiki.org/plugin:turnstile)
 [![License: GPL v2](https://img.shields.io/badge/license-GPL%20v2-green)](LICENSE)
 
-Protects the login, password reset and registration forms with
+Protects the login, password reset and registration forms and, if you want, page editing with
 [Cloudflare Turnstile](https://developers.cloudflare.com/turnstile/), a free, privacy friendly
 CAPTCHA alternative. The token is verified on the server before DokuWiki looks at the password,
 so bots trying passwords never reach your user backend.
@@ -37,6 +37,9 @@ Compatible with DokuWiki Kaos (2024-02-06), Librarian (2025-05-14) and Mort (202
   `lib/exe/xmlrpc.php`) while the remote API is enabled. Set `basicauth` to `all` if your web server
   logs users in via HTTP authentication.
 - Logins from the session cookie are never checked.
+- Saving a page in the editor, if *Page editing* is selected (off by default). A failed check turns
+  the save into a preview, so the text is kept and can be saved again with a new check. Previews and
+  drafts are not checked. Logged-in users are not asked unless `forusers` is switched on.
 
 An invalid, expired or reused token is always rejected. What happens when Cloudflare cannot be
 reached is configurable (`failmode`, default: reject).
@@ -48,6 +51,13 @@ reached is configurable (`failmode`, default: reject).
   internet.
 - Login forms that a template renders without DokuWiki's form API show no widget; logins through
   them are rejected.
+- Pages written through the remote API and reverting to an old revision are not checked: there is no
+  form to show the widget in. Limit them with ACLs if anonymous users may edit.
+
+## Protecting forms of other plugins
+
+Other plugins can use the helper component, see the comment at the top of
+[helper.php](helper.php).
 
 ## Locked out?
 

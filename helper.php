@@ -51,7 +51,7 @@ class helper_plugin_turnstile extends Plugin
     /**
      * The plugin is enabled and the given form is selected in the configuration
      *
-     * @param string $form one of login, resendpwd, register
+     * @param string $form one of login, resendpwd, register, edit
      * @return bool
      */
     public function isFormProtected($form)
@@ -59,6 +59,25 @@ class helper_plugin_turnstile extends Plugin
         if (!$this->isEnabled()) return false;
         $forms = array_map('trim', explode(',', (string)$this->getConf('forms')));
         return in_array($form, $forms, true);
+    }
+
+    /**
+     * Should the current request be checked for the given form?
+     *
+     * Like isFormProtected(), but logged-in users are skipped unless the "forusers" setting asks for them too.
+     * The login, password reset and registration forms are only shown to anonymous users, so for them both
+     * methods agree.
+     *
+     * @param string $form name of the form, see isFormProtected()
+     * @return bool
+     */
+    public function isRequestProtected($form)
+    {
+        global $INPUT;
+
+        if (!$this->isFormProtected($form)) return false;
+        if ($INPUT->server->str('REMOTE_USER') === '') return true;
+        return (bool)$this->getConf('forusers');
     }
 
     /**

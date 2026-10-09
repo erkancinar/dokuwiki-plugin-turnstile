@@ -9,6 +9,7 @@
 $conf['sitekey'] = '';
 $conf['secretkey'] = '';
 $conf['forms'] = 'login,resendpwd,register';
+$conf['forusers'] = 0;
 $conf['theme'] = 'auto';
 $conf['size'] = 'flexible';
 $conf['failmode'] = 'closed';
